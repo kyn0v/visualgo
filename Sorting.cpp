@@ -98,9 +98,25 @@ void QuickSort(int a[], int low, int high) {
     }
 }
 
+void CountingSort(int a[], int N, int max_value){
+    int *cnt = new int[max_value+1];
+    memset(cnt, 0, (max_value+1)*sizeof(int));
+    for(int i=0; i<N; i++){
+        cnt[a[i]]++;
+    }
+    int k=0;
+    for(int i=0; i<=N;i++){
+        for(int j=cnt[i]; j>0; j--){
+            a[k]=i;
+            k++;
+        }
+    }
+}
+
+
 int main() {
     int a[5] = {5, 4, 3, 2, 1};
-    QuickSort(a, 0, 4);
+    CountingSort(a, 0, 4);
     for (int i = 0; i < 5; i++) {
         cout << a[i] << " ";
     }
