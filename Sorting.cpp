@@ -98,25 +98,69 @@ void QuickSort(int a[], int low, int high) {
     }
 }
 
-void CountingSort(int a[], int N, int max_value){
-    int *cnt = new int[max_value+1];
-    memset(cnt, 0, (max_value+1)*sizeof(int));
-    for(int i=0; i<N; i++){
-        cnt[a[i]]++;
+void CountingSort(int a[], int N) {
+    int max_value = *max_element(a, a + N);
+    int *index = new int[max_value + 1];
+    int *sort_a = new int[N];
+    memset(index, 0, (max_value + 1) * sizeof(int));
+    for (int i = 0; i < N; i++) {
+        index[a[i]]++;
     }
-    int k=0;
-    for(int i=0; i<=N;i++){
-        for(int j=cnt[i]; j>0; j--){
-            a[k]=i;
-            k++;
-        }
+    for (int i = 1; i <= max_value; i++) {
+        index[i] += index[i - 1];
+    }
+    for (int i = N - 1; i >= 0; i--) {
+        index[a[i]]--;  //计数值先转换为index索引
+        sort_a[index[a[i]]] = a[i];
+        // sort_a[--index[a[i]]] = a[i];
+    }
+    for (int i = 0; i < N; i++) {
+        a[i] = sort_a[i];
     }
 }
 
+int MaxBit(int a[], int N) {
+    int d = 1;
+    int p = 10;
+    for (int i = 0; i < N; i++) {
+        while (a[i] > p) {
+            p *= 10;
+            d++;
+        }
+    }
+    return d;
+}
+
+void RadixSort(int a[], int N) {
+    int b = MaxBit(a, N);
+    int *index = new int[10];
+    int *tmp = new int[N];
+    int radix = 1;
+    for (int i = 0; i < b; i++) {
+        memset(index, 0, sizeof(int) * 10);
+        for (int j = 0; j < N; j++) {
+            int k = (a[j] / radix) % 10;
+            index[k]++;
+        }
+        for (int j = 1; j < 10; j++) {
+            index[j] += index[j - 1];
+        }
+        for (int j = N - 1; j >= 0; j--) {
+            int k = (a[j] / radix) % 10;
+            tmp[--index[k]] = a[j];
+        }
+        for (int j = 0; j < N; j++) {
+            a[j] = tmp[j];
+        }
+        radix *= 10;
+    }
+    delete[] tmp;
+    delete[] index;
+}
 
 int main() {
-    int a[5] = {5, 4, 3, 2, 1};
-    CountingSort(a, 0, 4);
+    int a[6] = {5, 4, 3, 2, 1};
+    RadixSort(a, 5);
     for (int i = 0; i < 5; i++) {
         cout << a[i] << " ";
     }
